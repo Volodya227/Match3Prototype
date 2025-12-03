@@ -19,7 +19,6 @@ namespace View
         public void Init()
         {
             _items = new Items.ItemController(_itemsState, _grid.width * (_grid.height), _grid, _dataItemsPrefab);
-            //_items.CreateRandom();
         }
         private void OnDestroy()
         {
