@@ -18,7 +18,7 @@ namespace View.CameraView
             if (EventSystem.current.IsPointerOverGameObject())
                 return;
             _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(_ray, out _hit, _InteractCellMask))
+            if (Physics.Raycast(ray: _ray, out _hit, layerMask: _InteractCellMask, maxDistance:1000))
             {
                 _hit.collider.GetComponent<Pickup.Pickup>()?.OnPicked();
             }

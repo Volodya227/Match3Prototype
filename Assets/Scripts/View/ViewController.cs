@@ -4,6 +4,8 @@ namespace View
     public class ViewController : MonoBehaviour
     {
         public event System.Action<int, int> EventOnClickedCellGrid;
+        [SerializeField] private Transform _cameraViewPosition;
+        private CameraView.CameraController _cameraView;
         private bool _editMode = false;
         [Range(100, 4000)]
         public int width;
@@ -22,10 +24,16 @@ namespace View
                 _grid.GetEventItem(i).EventOnCellClick += GetTouchedCell;
             }
         }
-        public void Init()
+        public void Init(Data.ItemsState itemsState, CameraView.CameraController cameraView)
         {
             if (_editMode) return;
+            _itemsState = itemsState;
             _items = new Items.ItemController(_itemsState, _grid.width * (_grid.height), _grid, _dataItemsPrefab);
+            _cameraView = cameraView;
+            if (_cameraViewPosition != null)
+            {
+                _cameraView.transform.SetParent(_cameraViewPosition, false);
+            }
         }
         private void GetTouchedCell(int x, int y)
         {
@@ -39,10 +47,6 @@ namespace View
                 _grid.GetEventItem(i).EventOnCellClick -= GetTouchedCell;
             }
             _grid.Clear(false);
-        }
-        public void SetItemsState(Data.ItemsState itemsState)
-        {
-            _itemsState = itemsState;
         }
         public void UpdateTick()
         {
