@@ -266,7 +266,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3928068672987437312}
-  - component: {fileID: 7618512366849596459}
+  - component: {fileID: 8348731678129113979}
   m_Layer: 0
   m_Name: UISystem
   m_TagString: Untagged
@@ -290,7 +290,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7618512366849596459
+--- !u!114 &8348731678129113979
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -306,11 +306,11 @@ MonoBehaviour:
   height: 400
   _grid:
     _isUI: 1
-    _prefabGrid: {fileID: 8530131634417371671, guid: cdcd04b970a0aea4da2f2f98690c7f24, type: 3}
+    _prefabGrid: {fileID: 5192236459181175134, guid: cdcd04b970a0aea4da2f2f98690c7f24, type: 3}
     _backGroundGrid: {fileID: 7006991578259440238}
     itemSizePixel: 100
-    height: 4
-    width: 8
+    height: 0
+    width: 0
   _dataItemsPrefab: {fileID: 11400000, guid: 1e73539549a76d94b96c4634681fe5d7, type: 2}
 --- !u!1 &8023026484970539882
 GameObject:

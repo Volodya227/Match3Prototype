@@ -5,15 +5,16 @@ namespace View.Grid
     public class GridView
     {
         [SerializeField] private bool _isUI = true;
-        [SerializeField] private Transform _prefabGrid;
+        [SerializeField] private CellGrid _prefabGrid;
         [SerializeField] private Transform _backGroundGrid;
-        private Transform[] _items;
+        private CellGrid[] _items;
         private bool _init = false;
         public int itemSizePixel = 100;
         public int height;
         public int width;
-        public Transform GetItem(int x, int y) => _items[x + width * y];
-        public Transform GetItemByIndex(int i) => _items[i];
+        public Transform GetItem(int x, int y) => _items[x + width * y].transform;
+        public Transform GetItemByIndex(int i) => _items[i].transform;
+        public CellGrid GetEventItem(int i) => _items[i];
         public void Clear(bool value)
         {
             if (!_init) return;
@@ -38,13 +39,14 @@ namespace View.Grid
             heightPixel /= itemSizePixel;
             width = widthPixel;
             height = heightPixel+1;
-            _items = new Transform[widthPixel * (heightPixel + 1)];
+            _items = new CellGrid[width * height];
             for (int h = 0; h < height; h++)
             {
                 for (int w = 0; w < width; w++)
                 {
                     _items[w + widthPixel * h] = Object.Instantiate(_prefabGrid, parent: _backGroundGrid);
                     _items[w + widthPixel * h].transform.localPosition = StartPosition + GetPosition(itemSizePixel * w, -itemSizePixel * h);
+                    _items[w + widthPixel * h].Init(w, h);
                 }
             }
         }

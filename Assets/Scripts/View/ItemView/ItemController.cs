@@ -16,7 +16,6 @@ namespace View.Items
         }
         public void Update()
         {
-            Create();
             for (int i = 0; i < _itemsView.Length; i++)
             {
                 if (_itemsView[i] != null)
@@ -25,6 +24,7 @@ namespace View.Items
                     if (!_itemsView[i].Active) _itemsView[i] = null;//update all in one iteration included with delete
                 }
             }
+            Create();
         }
         private void Create()
         {
@@ -34,8 +34,8 @@ namespace View.Items
                 if (item != null)
                 {
                     ItemView itemView = FactoryMethod(item);
-                    AddNewItemToList(itemView);//not null
                     itemView.SetParent(_grid.GetItem(item.X, item.Y), true);
+                    AddNewItemToList(itemView);//not null
                 }
             }
         }
@@ -47,8 +47,8 @@ namespace View.Items
                 if (_itemsView[i] == null)
                 {
                     ItemView itemView = FactoryMethod();
-                    AddNewItemToList(itemView);
                     itemView.SetParent(_grid.GetItemByIndex(i), true);
+                    AddNewItemToList(itemView);
                 }
             }
         }
@@ -58,18 +58,37 @@ namespace View.Items
             return new ItemView(data, view, _grid);
         }
         private GameObject GetRandomItemView(Data.ItemReadonly data = null) {
-            int color = 1;
+            Data.ItemTypeColor color;
+            int type;
             if (data == null)
             {
-                color = Random.Range(1, 5);
-            }
-            GameObject res;
-            if (color > 2) {
-                res = _prefabs.GetPrefabCommonGreen(Random.Range(0, 2));
+                color = data.Color;
+                type = (int)data.Type;
             }
             else
             {
-                res = _prefabs.GetPrefabCommonBlue(Random.Range(0, 2));
+                color = (Data.ItemTypeColor)Random.Range(0, System.Enum.GetValues(typeof(Data.ItemTypeColor)).Length);
+                type = Random.Range(0, System.Enum.GetValues(typeof(Data.ItemType)).Length);
+            }
+            GameObject res;
+            if (color == Data.ItemTypeColor.Green) {
+                res = _prefabs.GetPrefabCommonGreen(type);
+            }
+            else if (color == Data.ItemTypeColor.Yellow)
+            {
+                res = _prefabs.GetPrefabCommonYellow(type);
+            }
+            else if (color == Data.ItemTypeColor.Purple)
+            {
+                res = _prefabs.GetPrefabCommonPurple(type);
+            }
+            else if (color == Data.ItemTypeColor.Red)
+            {
+                res = _prefabs.GetPrefabCommonRed(type);
+            }
+            else
+            {
+                res = _prefabs.GetPrefabCommonBlue(type);
             }
             return res;
         }
@@ -81,9 +100,11 @@ namespace View.Items
                 if (_itemsView[i] == null)
                 {
                     _itemsView[i] = item;
-                    break;
+                    return;
                 }
             }
+            Debug.LogWarning("created item losing");
+            item.Destroy();
         }
         public void DestroyAll()
         {

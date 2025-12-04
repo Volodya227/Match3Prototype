@@ -3,14 +3,15 @@ namespace Data
 {
     public enum ItemType
     {
-        Bomb = -1, Common1 = 0//, Common2, Common3//use quad form
+        Common1, Common2, Common3
     }
+    //use quad form
     public enum ItemTypeColor
     {
         Red,
         Green,
         Blue,
-        Orange,
+        Yellow,
         Purple
     }
     public abstract class ItemReadonly
@@ -33,8 +34,14 @@ namespace Data
     }
     public class Item : ItemReadonly
     {
-        public Item(int x, int y, ItemType type, ItemTypeColor color) : base(type, color) { SetXY(x, y); }
+        public bool Active { get; private set; }
+        public Item(int x, int y, ItemType type, ItemTypeColor color) : base(type, color) { SetXY(x, y); Active = true; }
         public void SetXY(int x, int y) { X = x; Y = y; }
+        public void Delete()
+        {
+            Active = false;//for model
+            EventDestroyActivated();//for view
+        }
     }
     public class ItemsState
     {

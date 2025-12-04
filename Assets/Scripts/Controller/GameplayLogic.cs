@@ -19,11 +19,16 @@ namespace controller
             _itemsState = _model.ItemsState;
             _view.SetItemsState(_itemsState);
             _view.Init();
+            _view.EventOnClickedCellGrid += _model.SetClickedCellGrid;
         }
         private void FixedUpdate()
         {
             _model.UpdateTick();
             _view.UpdateTick();
+        }
+        private void OnDestroy()
+        {
+            _view.EventOnClickedCellGrid -= _model.SetClickedCellGrid;
         }
     }
 }

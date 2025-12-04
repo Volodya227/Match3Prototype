@@ -22,6 +22,7 @@ namespace View.Items
             }
             _grid = grid;
         }
+        //Hearing events from model
         private void SetAnimationFalling()
         {
             _animationFalling = true;
@@ -32,10 +33,9 @@ namespace View.Items
         }
         public void Update()
         {
-            if (_view == null || _destroy) {
-                Destroy();
-            }
-            if (_item == null) return;
+            if (_view == null) Destroy();
+            if (_destroy) Destroy();
+            if (!Active) return;
             if (_animationFalling)
             {
                 _animationFalling = false;
@@ -44,19 +44,20 @@ namespace View.Items
         }
         public void Destroy(bool editMode = false)
         {
+            Active = false;
             Dispose();
             if (_view != null)
             {
                 if (editMode) Object.DestroyImmediate(_view);
                 else Object.Destroy(_view);
             }
-            Active = false;
         }
         public void SetParent(Transform parent, bool ignore = false) {
             Vector3 position = _view.transform.position;
             _view.transform.SetParent(parent, false);
             if (ignore) return;
-            position.x = _view.transform.localScale.x;
+            position.x = parent.position.x;
+            _view.transform.position = position;
             _view.transform.position = position;//TODO start Animation
             //add coroutine?
         }

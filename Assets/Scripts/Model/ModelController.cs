@@ -1,18 +1,35 @@
 using UnityEngine;
-
 namespace Model
 {
+    public class ChoiceCellGridData{
+        public int X { get; private set; }
+        public int Y{ get; private set; }
+        public bool Active { get; private set; }
+        public ChoiceCellGridData()
+        {
+            Active = false;
+            X = 0;
+            Y = 0;
+        }
+        public void Set(int x, int y)
+        {
+            Active = true;
+            X = x;
+            Y = y;
+        }
+        public void Use() { Active = false; }
+    }
     public class ItemsStateModel : Data.ItemsState
     {
         private readonly int _width;
         private readonly int _height;
-        public readonly Data.ItemReadonly[,] grid;//update in change position item
+        public readonly Data.Item[,] grid;//update changing position item for find groups
 
         public ItemsStateModel(int width, int height) : base(width, height)
         {
             _width = width;
             _height = height;
-            grid = new Data.ItemReadonly[_width, _height];
+            grid = new Data.Item[_width, _height];
         }
         public void UpdateGravity()
         {
@@ -69,15 +86,36 @@ namespace Model
                 _createdItem[i] = null;//clear link, not object
             }
         }
+        public void ClearDeletedItem()
+        {
+            for (int i = 0; i < _items.Length; i++)
+            {
+                if (_items[i] != null)
+                {
+                    if (!_items[i].Active)
+                    {
+                        grid[_items[i].X, _items[i].Y] = null;
+                        _items[i] = null;
+                    }
+                }
+            }
+        }
     }
     public class ModelController
     {
+        private readonly ChoiceCellGridData _choiceCellGridData;
         private readonly ItemsStateModel _itemsState;
         public ItemsStateModel ItemsState => _itemsState;
         public ModelController(int width, int height) {
+            _choiceCellGridData = new();
             _itemsState = new ItemsStateModel(width, height);
         }
         public void UpdateTick() {
+            //Delete
+            if (_choiceCellGridData.Active) {
+                FindGroups();
+                _itemsState.ClearDeletedItem();
+            }
             //clear created items list
             _itemsState.ClearCreatedItems();
             //gravity
@@ -98,6 +136,20 @@ namespace Model
         private void UpdateItemsGravity()
         {
             _itemsState.UpdateGravity();
+        }
+        public void SetClickedCellGrid(int x, int y)
+        {
+            _choiceCellGridData.Set(x, y);
+        }
+        private void FindGroups()
+        {
+            //TODO
+            Delete();
+            _choiceCellGridData.Use();
+        }
+        private void Delete()
+        {
+            _itemsState.grid[_choiceCellGridData.X, _choiceCellGridData.Y].Delete();
         }
     }
 }
