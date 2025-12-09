@@ -8,6 +8,10 @@ namespace controller
         private View.ViewController _view;
         private Data.ItemsState _itemsState;
         private Model.ModelController _model;
+        [SerializeField] private Model.DirectionMode _directionModeForMoving = new();
+        [SerializeField] private Model.DirectionMode _directionModeForGrouping = new();
+        [SerializeField, Range(2, 10)] private int _minCountGroup = 3;
+
         private void Awake()
         {
             _view = Instantiate(_viewPrefab);
@@ -16,7 +20,7 @@ namespace controller
         private void Start()
         {
             View.Grid.GridView gridView = _view.Grid;
-            _model = new Model.ModelController(gridView.width, gridView.height);
+            _model = new Model.ModelController(gridView.width, gridView.height, _directionModeForGrouping, _minCountGroup);
             _itemsState = _model.ItemsState;
             _view.Init(_itemsState, _cameraView);
             _view.EventOnClickedCellGrid += _model.SetClickedCellGrid;

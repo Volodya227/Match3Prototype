@@ -7,11 +7,13 @@ namespace View.Grid
         [SerializeField] private bool _isUI = true;
         [SerializeField] private CellGrid _prefabGrid;
         [SerializeField] private Transform _backGroundGrid;
+        
         private CellGrid[] _items;
         private bool _init = false;
         public int itemSizePixel = 100;
         public int height;
         public int width;
+        public bool IsUI => _isUI;
         public Transform GetItem(int x, int y) => _items[x + width * y].transform;
         public Transform GetItemByIndex(int i) => _items[i].transform;
         public CellGrid GetEventItem(int i) => _items[i];
@@ -45,12 +47,23 @@ namespace View.Grid
                 for (int w = 0; w < width; w++)
                 {
                     _items[w + widthPixel * h] = Object.Instantiate(_prefabGrid, parent: _backGroundGrid);
+                    if (_isUI)
+                    {
+                        RectTransform rt = _items[w + widthPixel * h].transform as RectTransform;
+
+                        rt.sizeDelta = new Vector2(itemSizePixel, itemSizePixel);
+
+                    }
+                    else _items[w + widthPixel * h].transform.localScale = GetPosition(itemSizePixel, itemSizePixel, true);
                     _items[w + widthPixel * h].transform.localPosition = StartPosition + GetPosition(itemSizePixel * w, -itemSizePixel * h);
                     _items[w + widthPixel * h].Init(w, h);
                 }
             }
         }
-        private Vector3 GetPosition(int x, int y) => (_isUI) ? new Vector3(x, y, 0) : new Vector3(x, 0, y);
+        public Vector3 GetPosition(int x, int y, bool scale = false) {
+            int s = scale ? 1 : 0;
+            return (_isUI) ? new Vector3(x, y, s) : new Vector3(x, s, y);
+        }
         private void SafeDestroy(GameObject obj, bool value = false)
         {
             if (value) Object.DestroyImmediate(obj);

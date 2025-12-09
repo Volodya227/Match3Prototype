@@ -7,12 +7,14 @@ namespace View.Items
         private readonly ItemView[] _itemsView;
         private readonly Grid.GridView _grid;
         private readonly DataConfig.ItemDATAPrefabs _prefabs;
-        public ItemController(Data.ItemsState state, int maxCount, Grid.GridView grid, DataConfig.ItemDATAPrefabs prefabs)
+        private float _deltaItemsSize = .6f;
+        public ItemController(Data.ItemsState state, int maxCount, Grid.GridView grid, DataConfig.ItemDATAPrefabs prefabs , float deltaItemsSize = .6f)
         {
             _state = state;
             _itemsView = new ItemView[Mathf.Max(1, maxCount)];
             _grid = grid;
             _prefabs = prefabs;
+            _deltaItemsSize = deltaItemsSize;
         }
         public void Update()
         {
@@ -55,12 +57,19 @@ namespace View.Items
         private ItemView FactoryMethod(Data.ItemReadonly data = null)
         {
             GameObject view = Object.Instantiate(GetRandomItemView(data));
+            if (_grid.IsUI)
+            {
+                RectTransform rt = view.transform as RectTransform;
+                float size = _deltaItemsSize * _grid.itemSizePixel;
+                rt.sizeDelta = new Vector2(size, size);
+                //view.transform.localScale *= _grid.itemSizePixel;// _grid.GetPosition(_grid.itemSizePixel, _grid.itemSizePixel, true);
+            }
             return new ItemView(data, view, _grid);
         }
         private GameObject GetRandomItemView(Data.ItemReadonly data = null) {
             Data.ItemTypeColor color;
             int type;
-            if (data == null)
+            if (data != null)
             {
                 color = data.Color;
                 type = (int)data.Type;

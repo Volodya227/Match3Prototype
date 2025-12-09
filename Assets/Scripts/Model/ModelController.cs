@@ -1,9 +1,10 @@
 using UnityEngine;
 namespace Model
 {
-    public class ChoiceCellGridData{
+    public class ChoiceCellGridData
+    {
         public int X { get; private set; }
-        public int Y{ get; private set; }
+        public int Y { get; private set; }
         public bool Active { get; private set; }
         public ChoiceCellGridData()
         {
@@ -21,15 +22,11 @@ namespace Model
     }
     public class ItemsStateModel : Data.ItemsState
     {
-        private readonly int _width;
-        private readonly int _height;
         public readonly Data.Item[,] grid;//update changing position item for find groups
 
         public ItemsStateModel(int width, int height) : base(width, height)
         {
-            _width = width;
-            _height = height;
-            grid = new Data.Item[_width, _height];
+            grid = new Data.Item[Width, Height];
         }
         public void UpdateGravity()
         {
@@ -39,20 +36,20 @@ namespace Model
                     x = _items[i].X;
                     y = _items[i].Y;
                     int targetY;
-                    for (targetY = y + 1; targetY < _height; targetY++) {
+                    for (targetY = y + 1; targetY < Height; targetY++) {
                         if (grid[x, targetY] != null) {
                             targetY--;
                             break;
                         }
                     }
-                    targetY = Mathf.Min(targetY, _height - 1);
+                    targetY = Mathf.Min(targetY, Height - 1);
                     if (targetY != y)
                     {
                         grid[x, y] = null;
                         y = targetY;
                         grid[x, y] = _items[i];
                         _items[i].SetXY(x, y);
-                        _items[i].EventAnimatedFallActivated();
+                        _items[i].EventAnimatedFallActivate();
                     }
                 }
             }
@@ -100,21 +97,32 @@ namespace Model
                 }
             }
         }
+        public bool FullFilledGrid()
+        {
+            for(int x  = 0; x < Width; x++)
+            {
+                for(int y = 1; y < Height; y++)
+                {
+                    if (grid[x, y] == null) return false;
+                }
+            }
+            return true;
+        }
     }
     public class ModelController
     {
+        public readonly GroupingSystem _groupingSystem;
         private readonly ChoiceCellGridData _choiceCellGridData;
         private readonly ItemsStateModel _itemsState;
         public ItemsStateModel ItemsState => _itemsState;
-        public ModelController(int width, int height) {
+        public ModelController(int width, int height, DirectionMode mode, int minCountGroup = 3) {
             _choiceCellGridData = new();
             _itemsState = new ItemsStateModel(width, height);
+            _groupingSystem = new GroupingSystem(_itemsState, mode, minCountGroup);
         }
         public void UpdateTick() {
-            //Delete
-            if (_choiceCellGridData.Active) {
-                FindGroups();
-                _itemsState.ClearDeletedItem();
+            if (_itemsState.FullFilledGrid()) {
+                Delete();
             }
             //clear created items list
             _itemsState.ClearCreatedItems();
@@ -141,15 +149,16 @@ namespace Model
         {
             _choiceCellGridData.Set(x, y);
         }
-        private void FindGroups()
-        {
-            //TODO
-            Delete();
-            _choiceCellGridData.Use();
-        }
         private void Delete()
         {
-            _itemsState.grid[_choiceCellGridData.X, _choiceCellGridData.Y].Delete();
+            if (_groupingSystem.locked) return;
+            _groupingSystem.Grouping();
+            for (int i = 0; i < _groupingSystem.Count; i++) {
+                _groupingSystem.GetItem(i).Delete();
+            }
+            _itemsState.ClearDeletedItem();
+            if(_groupingSystem.Count == 0) _groupingSystem.locked = true;
+            _groupingSystem.Clear();
         }
     }
 }

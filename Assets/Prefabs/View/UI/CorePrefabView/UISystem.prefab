@@ -112,7 +112,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1000, y: 500}
+  m_SizeDelta: {x: 1000, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &266550394236026509
 CanvasRenderer:
@@ -302,16 +302,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37e93a0bd08446b42ac34856479ada9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 800
+  _cameraViewPosition: {fileID: 0}
+  width: 600
   height: 400
   _grid:
     _isUI: 1
-    _prefabGrid: {fileID: 5192236459181175134, guid: cdcd04b970a0aea4da2f2f98690c7f24, type: 3}
+    _prefabGrid: {fileID: -9127621070572129614, guid: 41a70c8494bf7ef45a1e73d292edffad, type: 3}
     _backGroundGrid: {fileID: 7006991578259440238}
     itemSizePixel: 100
     height: 0
     width: 0
   _dataItemsPrefab: {fileID: 11400000, guid: 1e73539549a76d94b96c4634681fe5d7, type: 2}
+  _deltaItemsSize: 0.6
 --- !u!1 &8023026484970539882
 GameObject:
   m_ObjectHideFlags: 0

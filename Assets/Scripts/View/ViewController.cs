@@ -15,6 +15,7 @@ namespace View
         private Items.ItemController _items;
         private Data.ItemsState _itemsState = null;
         [SerializeField] private Items.DataConfig.ItemDATAPrefabs _dataItemsPrefab;
+        [SerializeField, Range(0, 1)] private float _deltaItemsSize = .6f;
         public Grid.GridView Grid => _grid;
         private void Awake()
         {
@@ -28,7 +29,7 @@ namespace View
         {
             if (_editMode) return;
             _itemsState = itemsState;
-            _items = new Items.ItemController(_itemsState, _grid.width * (_grid.height), _grid, _dataItemsPrefab);
+            _items = new Items.ItemController(_itemsState, _grid.width * (_grid.height), _grid, _dataItemsPrefab, _deltaItemsSize);
             _cameraView = cameraView;
             if (_cameraViewPosition != null)
             {
@@ -79,7 +80,7 @@ namespace View
         {
             _editMode = true;
             ClearItemsView();
-            _items = new Items.ItemController(_itemsState, _grid.width * (_grid.height), _grid, _dataItemsPrefab);
+            _items = new Items.ItemController(_itemsState, _grid.width * (_grid.height), _grid, _dataItemsPrefab, _deltaItemsSize);
             _items.CreateRandom();
         }
     }

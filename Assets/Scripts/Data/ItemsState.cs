@@ -29,11 +29,12 @@ namespace Data
             Type = ItemType.Common1; // only one type
             Color = color;
         }
-        public void EventDestroyActivated() { EventDestroy?.Invoke(); }
-        public void EventAnimatedFallActivated() { EventAnimatedFall?.Invoke(); }
+        protected void EventDestroyActivated() { EventDestroy?.Invoke(); }
+        protected void EventAnimatedFallActivated() { EventAnimatedFall?.Invoke(); }
     }
     public class Item : ItemReadonly
     {
+        public bool visited;// for find groups
         public bool Active { get; private set; }
         public Item(int x, int y, ItemType type, ItemTypeColor color) : base(type, color) { SetXY(x, y); Active = true; }
         public void SetXY(int x, int y) { X = x; Y = y; }
@@ -42,17 +43,20 @@ namespace Data
             Active = false;//for model
             EventDestroyActivated();//for view
         }
+        public void EventAnimatedFallActivate() { EventAnimatedFallActivated(); }
     }
     public class ItemsState
     {
         protected readonly Item[] _items;
         protected readonly Item[] _createdItem;
         public int Width { get; protected set; }
+        public int Height { get; protected set; }
         public int CreatedItemCount => _createdItem.Length;
         public ItemReadonly GetCreatedItemByID(int id) { return _createdItem[Mathf.Clamp(id, 0, _createdItem.Length - 1)]; }//can create fake item "copy item by old data in view"
         public ItemsState(int width, int height)
         {
             Width = width;
+            Height = height;
             _items = new Item[width * height];
             _createdItem = new Item[width];
         }
