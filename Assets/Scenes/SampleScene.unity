@@ -328,7 +328,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d077f4dffc40d984db2e57097feb66c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _viewPrefab: {fileID: 8348731678129113979, guid: b885776c941b8c64392c1b7dc9cab241, type: 3}
+  _viewPrefab: {fileID: 8348731678129113979, guid: 3a618b713cd26cd4b853f69580da9bf9, type: 3}
   _cameraView: {fileID: 963194229}
   _directionModeForMoving:
     horizontal: 1
