@@ -114,15 +114,17 @@ namespace Model
         public readonly GroupingSystem _groupingSystem;
         private readonly ChoiceCellGridData _choiceCellGridData;
         private readonly ItemsStateModel _itemsState;
+        private readonly SwitchItemsSystem _switchItemsSystem;
         public ItemsStateModel ItemsState => _itemsState;
-        public ModelController(int width, int height, DirectionMode mode, int minCountGroup = 3) {
+        public ModelController(int width, int height, DirectionMode modeGrouping, DirectionMode modeMoving, int minCountGroup = 3) {
             _choiceCellGridData = new();
             _itemsState = new ItemsStateModel(width, height);
-            _groupingSystem = new GroupingSystem(_itemsState, mode, minCountGroup);
+            _groupingSystem = new GroupingSystem(_itemsState, modeGrouping, minCountGroup);
+            _switchItemsSystem = new SwitchItemsSystem(_itemsState, modeMoving);
         }
         public void UpdateTick() {
             if (_itemsState.FullFilledGrid()) {
-                Delete();
+                SwitchItems();
             }
             //clear created items list
             _itemsState.ClearCreatedItems();
@@ -149,16 +151,47 @@ namespace Model
         {
             _choiceCellGridData.Set(x, y);
         }
+        private void SwitchItems()
+        {
+            if (_choiceCellGridData.Active)
+            {
+                if (_switchItemsSystem.SetItem(_choiceCellGridData.X, _choiceCellGridData.Y))
+                {
+                    
+                    GroupByItem(_switchItemsSystem.GetItem);
+                    GroupByItem(_switchItemsSystem.GetNewItem);
+                    _switchItemsSystem.Clear();
+                    DeleteGroups();
+                }
+                _choiceCellGridData.Use();
+            }
+        }
+        private void GroupByItem(Data.Item item)
+        {
+            _groupingSystem.ActivatedGroup(item.X, item.Y);
+        }
+        private void DeleteGroups()
+        {
+            for (int i = 0; i < _groupingSystem.Count; i++)
+            {
+                _groupingSystem.GetItem(i).Delete();
+            }
+            _itemsState.ClearDeletedItem();
+            _groupingSystem.Clear();
+
+        }
         private void Delete()
         {
             if (_groupingSystem.locked) return;
             _groupingSystem.Grouping();
-            for (int i = 0; i < _groupingSystem.Count; i++) {
+            for (int i = 0; i < _groupingSystem.Count; i++)
+            {
                 _groupingSystem.GetItem(i).Delete();
             }
             _itemsState.ClearDeletedItem();
-            if(_groupingSystem.Count == 0) _groupingSystem.locked = true;
+            if (_groupingSystem.Count == 0) _groupingSystem.locked = true;
             _groupingSystem.Clear();
         }
+
     }
 }

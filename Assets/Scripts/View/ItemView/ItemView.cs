@@ -7,6 +7,7 @@ namespace View.Items
         private Data.ItemReadonly _item;
         private readonly GameObject _view;
         private bool _animationFalling;
+        private bool _move;
         private bool _destroy;
         private readonly Grid.GridView _grid;
         public bool Active { get; private set; }
@@ -19,6 +20,7 @@ namespace View.Items
             {
                 _item.EventAnimatedFall += SetAnimationFalling;
                 _item.EventDestroy += SetDestroy;
+                _item.EventMove += SetMove;
             }
             _grid = grid;
         }
@@ -26,6 +28,10 @@ namespace View.Items
         private void SetAnimationFalling()
         {
             _animationFalling = true;
+        }
+        private void SetMove()
+        {
+            _move = true;
         }
         private void SetDestroy()
         {
@@ -40,6 +46,10 @@ namespace View.Items
             {
                 _animationFalling = false;
                 SetParent(_grid.GetItem(_item.X, _item.Y), true);//TODO true -> false
+            }
+            if (_move) {
+                _move = false;
+                SetParent(_grid.GetItem(_item.X, _item.Y), true);
             }
         }
         public void Destroy(bool editMode = false)
@@ -56,8 +66,6 @@ namespace View.Items
             Vector3 position = _view.transform.position;
             _view.transform.SetParent(parent, false);
             if (ignore) return;
-            position.x = parent.position.x;
-            _view.transform.position = position;
             _view.transform.position = position;//TODO start Animation
             //add coroutine?
         }
@@ -66,6 +74,7 @@ namespace View.Items
             if (_item == null) return;
             _item.EventAnimatedFall -= SetAnimationFalling;
             _item.EventDestroy -= SetDestroy;
+            _item.EventMove -= SetMove;
             _item = null;
         }
     }

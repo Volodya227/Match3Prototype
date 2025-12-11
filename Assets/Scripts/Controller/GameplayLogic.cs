@@ -20,7 +20,7 @@ namespace controller
         private void Start()
         {
             View.Grid.GridView gridView = _view.Grid;
-            _model = new Model.ModelController(gridView.width, gridView.height, _directionModeForGrouping, _minCountGroup);
+            _model = new Model.ModelController(gridView.width, gridView.height, _directionModeForGrouping, _directionModeForMoving, _minCountGroup);
             _itemsState = _model.ItemsState;
             _view.Init(_itemsState, _cameraView);
             _view.EventOnClickedCellGrid += _model.SetClickedCellGrid;

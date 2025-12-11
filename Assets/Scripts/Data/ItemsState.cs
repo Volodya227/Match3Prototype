@@ -17,6 +17,7 @@ namespace Data
     public abstract class ItemReadonly
     {
         public event System.Action EventDestroy;
+        public event System.Action EventMove;
         public event System.Action EventAnimatedFall;
         public int X { get; protected set; }
         public int Y { get; protected set; }
@@ -31,6 +32,7 @@ namespace Data
         }
         protected void EventDestroyActivated() { EventDestroy?.Invoke(); }
         protected void EventAnimatedFallActivated() { EventAnimatedFall?.Invoke(); }
+        protected void EventMoveActivated() { EventMove?.Invoke(); }
     }
     public class Item : ItemReadonly
     {
@@ -44,6 +46,7 @@ namespace Data
             EventDestroyActivated();//for view
         }
         public void EventAnimatedFallActivate() { EventAnimatedFallActivated(); }
+        public void EventMoveActivate() { EventMoveActivated(); }
     }
     public class ItemsState
     {

@@ -167,10 +167,11 @@ MonoBehaviour:
     _isUI: 0
     _prefabGrid: {fileID: 2041384986889954589, guid: 48a7b54e3ca18904a90227ff1ece000c, type: 3}
     _backGroundGrid: {fileID: 6122853070351193228}
-    itemSizePixel: 10
+    itemSizePixel: 5
     height: 0
     width: 0
   _dataItemsPrefab: {fileID: 11400000, guid: f6e52279da0e20344a6266cb0e8f6894, type: 2}
+  _deltaItemsSize: 0.6
 --- !u!1 &9005206501177142337
 GameObject:
   m_ObjectHideFlags: 0

@@ -43,14 +43,23 @@ namespace Model
         }
         public void Clear()
         {
-            for(int i = 0;  i < _itemsGroup.Length; i++)
+            for (int x = 0; x < _itemsStateModel.Width; x++)
+            {
+                for (int y = 1; y < _itemsStateModel.Height; y++)
+                {
+                    Data.Item item = _itemsStateModel.grid[x, y];
+                    if (item == null) continue;
+                    item.visited = false;
+                }
+            }
+            for (int i = 0;  i < _itemsGroup.Length; i++)
             {
                 _itemsGroup[i] = null;
             }
             _groupingItemsCount = 0;
             _newGroupItemsCount = 0;
         }
-        private void ActivatedGroup(int x = 0, int y = 0)
+        public void ActivatedGroup(int x = 0, int y = 0)
         {
             _stack.Clear();
             Data.Item item = _itemsStateModel.grid[x, y];
