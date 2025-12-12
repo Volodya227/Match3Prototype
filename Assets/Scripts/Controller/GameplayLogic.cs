@@ -11,6 +11,8 @@ namespace controller
         [SerializeField] private Model.DirectionMode _directionModeForMoving = new();
         [SerializeField] private Model.DirectionMode _directionModeForGrouping = new();
         [SerializeField, Range(2, 10)] private int _minCountGroup = 3;
+        private float _timerForUpdateState;
+        private float _timeUpdateStep = .3f;
 
         private void Awake()
         {
@@ -27,8 +29,13 @@ namespace controller
         }
         private void FixedUpdate()
         {
-            _model.UpdateTick();
-            _view.UpdateTick();
+            _timerForUpdateState += Time.deltaTime;
+            if (_timerForUpdateState >= _timeUpdateStep)
+            {
+                _timerForUpdateState = 0;
+                _model.UpdateTick();
+                _view.UpdateTick();
+            }
         }
         private void OnDestroy()
         {
