@@ -16,7 +16,10 @@ namespace View.Items
             _prefabs = prefabs;
             _deltaItemsSize = deltaItemsSize;
         }
+        
         public void Update()
+        // Update() - може бути заплутано з Unity's Update().
+        // Краще: Tick(), ProcessFrame(), UpdateViews()
         {
             for (int i = 0; i < _itemsView.Length; i++)
             {
@@ -24,11 +27,14 @@ namespace View.Items
                 {
                     _itemsView[i].Update();
                     if (!_itemsView[i].Active) _itemsView[i] = null;//update all in one iteration included with delete
+                    //Добре, оптимізація - видалення в тому ж циклі що й оновлення.
                 }
             }
             Create();
         }
+        
         private void Create()
+        // Create() - занадто загально. Краще: CreateNewItemViews() або SpawnPendingItems()
         {
             for (int i = 0; i < _state.CreatedItemCount; i++)
             {
@@ -41,6 +47,7 @@ namespace View.Items
                 }
             }
         }
+        
         public void CreateRandom()
         {
             DestroyAll();
@@ -54,7 +61,10 @@ namespace View.Items
                 }
             }
         }
+        
         private ItemView FactoryMethod(Data.ItemReadonly data = null)
+        // FactoryMethod - це патерн, не назва методу.
+        // Краще: CreateItemView() або InstantiateItemView()
         {
             GameObject view = Object.Instantiate(GetRandomItemView(data));
             if (_grid.IsUI)
@@ -63,10 +73,15 @@ namespace View.Items
                 float size = _deltaItemsSize * _grid.itemSizePixel;
                 rt.sizeDelta = new Vector2(size, size);
                 //view.transform.localScale *= _grid.itemSizePixel;// _grid.GetPosition(_grid.itemSizePixel, _grid.itemSizePixel, true);
+                // Закоментований код - видалити якщо не потрібен.
             }
             return new ItemView(data, view, _grid);
         }
+        
         private GameObject GetRandomItemView(Data.ItemReadonly data = null) {
+        // GetRandomItemView - але метод не завжди повертає рандомний,
+        // якщо data != null то по конкретному кольору/типу.
+        // Краще: GetItemPrefab() або SelectItemPrefab()
             Data.ItemTypeColor color;
             int type;
             if (data != null)
@@ -100,7 +115,13 @@ namespace View.Items
                 res = _prefabs.GetPrefabCommonBlue(type);
             }
             return res;
+            // Цей if-else ланцюжок можна замінити на switch або Dictionary.
+            // Ще краще - змінити ItemDATAPrefabs щоб мати один метод GetPrefab(color, type).
+            // Приклад:
+            // return _prefabs.GetPrefab(color, type);
+            // де GetPrefab всередині використовує Dictionary<ItemTypeColor, GameObject[]>
         }
+        
         private void AddNewItemToList(ItemView item)
         {
             if (item == null) return;
@@ -113,8 +134,12 @@ namespace View.Items
                 }
             }
             Debug.LogWarning("created item losing");
+            // Добре - Warning коли не вдалось додати - правильно для дебагу.
+            // Але краще детальніше: $"Created item lost - array full. Capacity: {_itemsView.Length}"
+            
             item.Destroy();
         }
+        
         public void DestroyAll()
         {
             for (int i = 0; i < _itemsView.Length; i++)

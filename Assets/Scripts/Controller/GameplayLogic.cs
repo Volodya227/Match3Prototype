@@ -1,6 +1,8 @@
 using UnityEngine;
 namespace controller
 {
+    // Namespace "controller" з маленької букви. В C# конвенція - PascalCase для namespace.
+    
     public class GameplayLogic : MonoBehaviour
     {
         [SerializeField] private View.ViewController _viewPrefab;
@@ -13,6 +15,11 @@ namespace controller
         [SerializeField, Range(2, 10)] private int _minCountGroup = 3;
         private float _timerForUpdateState;
         private float _timeUpdateStep = .3f;
+        
+        // Гарна практика - групувати поля за призначенням з коментарями:
+        // [Header("References")]
+        // [Header("Settings")]
+        // [Header("Runtime State")] - для приватних полів що змінюються в runtime
 
         private void Awake()
         {
@@ -30,6 +37,10 @@ namespace controller
         private void FixedUpdate()
         {
             _timerForUpdateState += Time.deltaTime;
+            // В FixedUpdate треба використовувати Time.fixedDeltaTime, не Time.deltaTime.
+            // Хоча Unity автоматично повертає fixedDeltaTime коли викликається з FixedUpdate,
+            // явне використання Time.fixedDeltaTime краще.
+            
             if (_timerForUpdateState >= _timeUpdateStep)
             {
                 _timerForUpdateState = 0;
@@ -40,6 +51,7 @@ namespace controller
         private void OnDestroy()
         {
             _view.EventOnClickedCellGrid -= _model.SetClickedCellGrid;
+            // Добре: Правильне відписування від event - важливо для запобігання memory leak.
         }
     }
 }
