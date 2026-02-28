@@ -23,7 +23,6 @@ namespace Model
     public class ItemsStateModel : Data.ItemsState
     {
         public readonly Data.Item[,] grid;//update changing position item for find groups
-
         public ItemsStateModel(int width, int height) : base(width, height)
         {
             grid = new Data.Item[Width, Height];
@@ -97,6 +96,16 @@ namespace Model
                 }
             }
         }
+        public void SwitchItems(Data.Item item1, Data.Item item2) {
+            int x = item2.X;
+            int y = item2.Y;
+            item2.SetXY(item1.X, item1.Y);
+            item1.SetXY(x, y);
+            grid[item2.X, item2.Y] = item2;
+            grid[item1.X, item1.Y] = item1;
+            item1.EventMoveActivate();
+            item2.EventMoveActivate();
+        }
         public bool FullFilledGrid()
         {
             for(int x  = 0; x < Width; x++)
@@ -111,37 +120,52 @@ namespace Model
     }
     public class ModelController
     {
+        public enum ResolveMode { FullBoardScan, SwapOnly }
+        private readonly ResolveMode _resolveMode;
         public readonly GroupingSystem _groupingSystem;
         private readonly ChoiceCellGridData _choiceCellGridData;
         private readonly ItemsStateModel _itemsState;
         private readonly SwitchItemsSystem _switchItemsSystem;
         public ItemsStateModel ItemsState => _itemsState;
-        public ModelController(int width, int height, DirectionMode modeGrouping, DirectionMode modeMoving, int minCountGroup = 3) {
+        private bool _canDelete = false;
+        public ModelController(int width, int height, DirectionMode modeGrouping, DirectionMode modeMoving, int minCountGroup = 3, ResolveMode resolveMode = default)
+        {
             _choiceCellGridData = new();
             _itemsState = new ItemsStateModel(width, height);
             _groupingSystem = new GroupingSystem(_itemsState, modeGrouping, minCountGroup);
             _switchItemsSystem = new SwitchItemsSystem(_itemsState, modeMoving);
+            _resolveMode = resolveMode;
         }
-        public void UpdateTick() {
-            if (_itemsState.FullFilledGrid()) {
-                SwitchItems();
-            }
+        public void UpdateTick()
+        {
             //clear created items list
             _itemsState.ClearCreatedItems();
             //gravity
             UpdateItemsGravity();
             //create
-            CreateNewItems();
+            if (CreateNewItems())
+            {
+                if (_itemsState.FullFilledGrid())
+                {
+                    Delete();
+                    SwitchItems();
+                }
+                else
+                    _groupingSystem.locked = false;
+            }
         }
-        private void CreateNewItems()
+        private bool CreateNewItems()
         {
+            bool resalt = true;
             for(int i = 0; i < _itemsState.Width; i++)
             {
                 if (_itemsState.grid[i,0] == null)
                 {
                     _itemsState.AddNewItem(ModelFactory.CreateItem(i));
+                    resalt = false;
                 }
             }
+            return resalt;
         }
         private void UpdateItemsGravity()
         {
@@ -157,11 +181,11 @@ namespace Model
             {
                 if (_switchItemsSystem.SetItem(_choiceCellGridData.X, _choiceCellGridData.Y))
                 {
-                    
+                    _groupingSystem.locked = false;
+                    _canDelete = true;
                     GroupByItem(_switchItemsSystem.GetItem);
                     GroupByItem(_switchItemsSystem.GetNewItem);
                     _switchItemsSystem.Clear();
-                    DeleteGroups();
                 }
                 _choiceCellGridData.Use();
             }
@@ -182,16 +206,21 @@ namespace Model
         }
         private void Delete()
         {
-            if (_groupingSystem.locked) return;
-            _groupingSystem.Grouping();
-            for (int i = 0; i < _groupingSystem.Count; i++)
+            if (_resolveMode != ResolveMode.FullBoardScan)
             {
-                _groupingSystem.GetItem(i).Delete();
+                if (_canDelete)
+                {
+                    _canDelete = false;
+                    DeleteGroups();
+                }
+                return;
             }
-            _itemsState.ClearDeletedItem();
-            if (_groupingSystem.Count == 0) _groupingSystem.locked = true;
+            if (_groupingSystem.locked) return;
             _groupingSystem.Clear();
+            _switchItemsSystem.Clear();
+            _groupingSystem.Grouping();
+            if (_groupingSystem.Count == 0) _groupingSystem.locked = true;
+            DeleteGroups();
         }
-
     }
 }

@@ -3,6 +3,8 @@ namespace controller
 {
     public class GameplayLogic : MonoBehaviour
     {
+        [SerializeField] private Model.ModelController.ResolveMode _resolveMode = Model.ModelController.ResolveMode.FullBoardScan;
+        [SerializeField] private bool _modelOnly = false;
         [SerializeField] private View.ViewController _viewPrefab;
         [SerializeField] private View.CameraView.CameraController _cameraView;
         private View.ViewController _view;
@@ -12,20 +14,30 @@ namespace controller
         [SerializeField] private Model.DirectionMode _directionModeForGrouping = new();
         [SerializeField, Range(2, 10)] private int _minCountGroup = 3;
         private float _timerForUpdateState;
-        private float _timeUpdateStep = .3f;
+        private readonly float _timeUpdateStep = .2f;
 
         private void Awake()
         {
+            if (_modelOnly)
+                return;
             _view = Instantiate(_viewPrefab);
             _view.transform.position = Vector3.zero;
         }
         private void Start()
         {
-            View.Grid.GridView gridView = _view.Grid;
-            _model = new Model.ModelController(gridView.width, gridView.height, _directionModeForGrouping, _directionModeForMoving, _minCountGroup);
-            _itemsState = _model.ItemsState;
-            _view.Init(_itemsState, _cameraView);
-            _view.EventOnClickedCellGrid += _model.SetClickedCellGrid;
+            if (_modelOnly)
+            {
+                _model = new Model.ModelController(400, 400, _directionModeForGrouping, _directionModeForMoving, _minCountGroup);
+                _itemsState = _model.ItemsState;
+            }
+            else
+            {
+                View.Grid.GridView gridView = _view.Grid;
+                _model = new Model.ModelController(gridView.width, gridView.height, _directionModeForGrouping, _directionModeForMoving, _minCountGroup, _resolveMode);
+                _itemsState = _model.ItemsState;
+                _view.Init(_itemsState, _cameraView);
+                _view.EventOnClickedCellGrid += _model.SetClickedCellGrid;
+            }
         }
         private void FixedUpdate()
         {
@@ -34,7 +46,8 @@ namespace controller
             {
                 _timerForUpdateState = 0;
                 _model.UpdateTick();
-                _view.UpdateTick();
+                if (!_modelOnly)
+                    _view.UpdateTick();
             }
         }
         private void OnDestroy()

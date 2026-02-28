@@ -2,6 +2,7 @@ namespace Model
 {
     public class GroupingSystem
     {
+        // position Items[x = (0, width),y = 0] - spawn
         public bool locked = false;
         private readonly System.Collections.Generic.Stack<Data.Item> _stack = new();
         private readonly Data.Item[] _itemsGroup;

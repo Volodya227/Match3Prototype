@@ -5,7 +5,7 @@ namespace View.Items
     [System.Serializable]
     public class ItemView
     {
-        private const float _timeDestroy = .35f;
+        private const float _timeDestroy = .2f;
         private const float _timeMoving = .15f;
         private Data.ItemReadonly _item;
         private readonly GameObject _view;
@@ -48,7 +48,7 @@ namespace View.Items
             if (_animationFalling)
             {
                 _animationFalling = false;
-                SetParent(_grid.GetItem(_item.X, _item.Y), false);//TODO true -> false
+                SetParent(_grid.GetItem(_item.X, _item.Y), false);
             }
             if (_move) {
                 _move = false;
@@ -61,17 +61,10 @@ namespace View.Items
             Dispose();
             if (_view != null)
             {
-                if (editMode) Object.DestroyImmediate(_view);
+                if (editMode)
+                    Object.DestroyImmediate(_view);
                 else
-                {
-
-                    _view.transform.DOScale(Vector3.zero, _timeDestroy)
-                     .SetEase(Ease.InBack)
-                     .OnComplete(() =>
-                     {
-                         Object.Destroy(_view);
-                     });
-                }
+                    _view.transform.DOScale(Vector3.zero, _timeDestroy).SetEase(Ease.InBack).OnComplete(() => { Object.Destroy(_view); });
             }
         }
         public void SetParent(Transform parent, bool ignore = false) {

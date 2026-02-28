@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Model
 {
     public class SwitchItemsSystem
@@ -44,14 +42,7 @@ namespace Model
         }
         private void Switch()
         {
-            _state.grid[_item.X, _item.Y] = _newItem;
-            _state.grid[_newItem.X, _newItem.Y] = _item;
-            int x = _newItem.X;
-            int y = _newItem.Y;
-            _newItem.SetXY(_item.X, _item.Y);
-            _item.SetXY(x, y);
-            _item.EventMoveActivate();
-            _newItem.EventMoveActivate();
+            _state.SwitchItems(_item, _newItem);return;
         }
         public void Clear()
         {

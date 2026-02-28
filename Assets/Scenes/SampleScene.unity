@@ -328,16 +328,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d077f4dffc40d984db2e57097feb66c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _resolveMode: 0
+  _modelOnly: 0
   _viewPrefab: {fileID: 8348731678129113979, guid: 3a618b713cd26cd4b853f69580da9bf9, type: 3}
   _cameraView: {fileID: 963194229}
   _directionModeForMoving:
     horizontal: 1
     vertical: 1
-    diagonal: 0
+    diagonal: 1
   _directionModeForGrouping:
     horizontal: 1
     vertical: 1
-    diagonal: 1
+    diagonal: 0
   _minCountGroup: 3
 --- !u!4 &1665507808
 Transform:
