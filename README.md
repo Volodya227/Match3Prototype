@@ -1,82 +1,28 @@
 Match-3 Core Engine (Unity)
-Custom Match-3 implementation focused on deterministic state management, layered architecture, and extensible grouping logic.
-This project was built without gameplay frameworks. All core mechanics (grouping, gravity, state updates) are implemented manually.
+Реалізація Match-3 з акцентом на детерміноване управління станом та розділення логіки і відображення.
+Підтримує два режими відображення — 3D та UI — які перемикаються без змін в ігровій логіці. Параметри групування, переміщення та розміру поля конфігуруються з Inspector без зміни коду.
 
-Architecture
-The project follows a layered design:
-Model — pure game logic (no MonoBehaviour)
-View — rendering and animation layer
-Controller — orchestrates update pipeline
-Model and View are decoupled via events.
+Архітектура
+Model
+Чиста C# логіка без MonoBehaviour. Стан дошки еволюціонує через дискретні тіки: гравітація → спавн → видалення груп → розблокування. ItemsState підтримує інваріант grid[x,y] — всі мутації через централізовані методи.
+
+Data
+ItemReadonly — read-only інтерфейс для View. Model оперує Item, View бачить тільки ItemReadonly. Синхронізація через події на рівні об'єкта: EventMove, EventDestroy, EventAnimatedFall — View підписується на кожен item окремо при створенні і відписується при знищенні.
+
 Controller
-→ Model (state & logic)
-→ View (animation & rendering)
-The Model layer is fully independent of Unity lifecycle.
+GameplayLogic — MonoBehaviour що ініціалізує Model і View та оркеструє tick-based update. View отримує посилання на ItemsState при ініціалізації і самостійно підписується на події об'єктів.
 
-Game State Design
-The board state consists of:
-Item objects (position, type, color, state)
-2D grid index for fast lookup
+Синхронізація шарів
+Model і View оновлюються в одному тіку — спочатку _model.UpdateTick(), потім _view.UpdateTick(). View не тягне стан з Model напряму — реагує на події які Model диспатчить під час свого оновлення.
 
-Invariant:
-grid[x, y] always matches Item.X/Y.
-All item mutations go through centralized state methods to maintain consistency.
-The system avoids hidden magic and relies on explicit state transitions.
+View
+Підписується на події Model через ItemReadonly. Анімації через DOTween. Не мутує стан — тільки реагує на події.
 
-Update Pipeline
-Game state evolves in discrete ticks.
-Each tick performs:
-Resolve matches (group detection)
-Delete matched items
-Apply gravity
-Spawn new items
-Unlock grouping
-This ensures deterministic and predictable board evolution.
-Grouping System
-Grouping is implemented using a flood-fill algorithm.
+Grouping
+Flood-fill алгоритм з конфігурованими напрямками через DirectionFactory. Підтримує горизонталь, вертикаль та діагональ незалежно для групування і переміщення. Мінімальний розмір групи конфігурується.
 
-Features:
-Configurable direction modes:
-Horizontal
-Vertical
-Diagonal
+Input
+Pickup абстракція підтримує обидва джерела — raycast для 3D та IPointerClickHandler для UI. Координати кліку передаються в Model через подію.
 
-Minimum group size configurable
-Local visited tracking during grouping pass
-Grouping logic is isolated from movement logic.
-Item Movement
-Item switching is validated via allowed direction modes.
-State mutation includes:
-Grid index update
-Item position update
-Event dispatch for animation layer
-Movement logic is separated from grouping logic.
-View Layer
-
-The View layer:
-Subscribes to Model events
-Animates movement via DOTween
-Does not mutate game state
-Visual behavior reacts to Model changes only.
-Extensibility
-
-The architecture supports:
-Alternative grouping rules
-Custom item behaviors (e.g., bomb logic)
-Different movement constraints
-Additional rule systems
-The system is designed to allow expansion without rewriting core state logic.
-
-Tech Stack
-Unity
-C#
-DOTween
-Custom state engine (no third-party gameplay framework)
-
-Design Focus
-This project emphasizes:
-Deterministic state control
-Separation of concerns
-Explicit mutation handling
-Clean update pipeline
-The goal was to implement a transparent Match-3 core system rather than rely on built-in mechanics.
+Технології
+Unity, C#, DOTween
