@@ -27,6 +27,10 @@ namespace View.Items
             }
             _grid = grid;
         }
+        public void SetScale(Vector3 scale)
+        {
+            _view.transform.localScale = scale;
+        }
         //Hearing events from model
         private void SetAnimationFalling()
         {
@@ -73,7 +77,8 @@ namespace View.Items
             if (ignore) return;
             _view.transform.position = position;
             position = _view.transform.localPosition;
-            float t = _timeMoving * position.magnitude;
+            float t = _timeMoving * position.magnitude / _grid.itemSizePixel;
+            Debug.Log(t);
             _view.transform.DOKill();
             _view.transform.DOLocalMove(Vector3.zero, t).SetEase(Ease.OutCubic);
         }

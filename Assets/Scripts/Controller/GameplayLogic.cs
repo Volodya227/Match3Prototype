@@ -41,7 +41,7 @@ namespace controller
         }
         private void FixedUpdate()
         {
-            _timerForUpdateState += Time.deltaTime;
+            _timerForUpdateState += Time.fixedDeltaTime;
             if (_timerForUpdateState >= _timeUpdateStep)
             {
                 _timerForUpdateState = 0;

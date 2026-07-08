@@ -15,6 +15,7 @@ namespace View.Grid
         public int width;
         public bool IsUI => _isUI;
         public Transform GetItem(int x, int y) => _items[x + width * y].transform;
+        public Transform GetItemParent(int x, int y) => _items[x + width * y].CellObject;
         public Transform GetItemByIndex(int i) => _items[i].transform;
         public CellGrid GetEventItem(int i) => _items[i];
         public void Clear(bool value)
@@ -54,7 +55,7 @@ namespace View.Grid
                         rt.sizeDelta = new Vector2(itemSizePixel, itemSizePixel);
 
                     }
-                    else _items[w + widthPixel * h].transform.localScale = GetPosition(itemSizePixel, itemSizePixel, true);
+                    else _items[w + widthPixel * h].SetVisualScale(GetPosition(itemSizePixel, itemSizePixel, true));
                     _items[w + widthPixel * h].transform.localPosition = StartPosition + GetPosition(itemSizePixel * w, -itemSizePixel * h);
                     _items[w + widthPixel * h].Init(w, h);
                 }

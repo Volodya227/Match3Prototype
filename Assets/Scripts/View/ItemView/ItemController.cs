@@ -36,6 +36,7 @@ namespace View.Items
                 if (item != null)
                 {
                     ItemView itemView = FactoryMethod(item);
+                    //itemView.SetScale = 
                     itemView.SetParent(_grid.GetItem(item.X, item.Y), true);
                     AddNewItemToList(itemView);//not null
                 }
@@ -63,6 +64,10 @@ namespace View.Items
                 float size = _deltaItemsSize * _grid.itemSizePixel;
                 rt.sizeDelta = new Vector2(size, size);
                 //view.transform.localScale *= _grid.itemSizePixel;// _grid.GetPosition(_grid.itemSizePixel, _grid.itemSizePixel, true);
+            }
+            else
+            {
+                view.transform.localScale *= _grid.itemSizePixel;// _grid.GetPosition(_grid.itemSizePixel, _grid.itemSizePixel, true);
             }
             return new ItemView(data, view, _grid);
         }
