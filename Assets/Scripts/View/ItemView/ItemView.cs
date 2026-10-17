@@ -78,7 +78,6 @@ namespace View.Items
             _view.transform.position = position;
             position = _view.transform.localPosition;
             float t = _timeMoving * position.magnitude / _grid.itemSizePixel;
-            Debug.Log(t);
             _view.transform.DOKill();
             _view.transform.DOLocalMove(Vector3.zero, t).SetEase(Ease.OutCubic);
         }

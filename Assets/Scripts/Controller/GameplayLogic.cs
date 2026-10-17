@@ -52,6 +52,10 @@ namespace controller
         }
         private void OnDestroy()
         {
+            if (_modelOnly)
+            {
+                return;
+            }
             _view.EventOnClickedCellGrid -= _model.SetClickedCellGrid;
         }
     }
